@@ -1,0 +1,69 @@
+.blog-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background-color: white; /* მუქი ფონ */
+}
+
+.post-card {
+  display: flex;
+  align-items: center;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 15px;
+  gap: 15px;
+}
+
+.post-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.post-content {
+  flex: 1;
+  color: #ffffff;
+}
+
+.post-title {
+  margin: 0 0 5px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.post-description {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+.post-meta {
+  font-size: 0.85rem;
+  color: #aaa;
+  display: flex;
+  gap: 10px;
+}
+
+.post-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.more-btn {
+  background-color: #ff6b6b;
+  border: none;
+  padding: 8px 12px;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.more-btn:hover {
+  background-color: #ff4b4b;
+}

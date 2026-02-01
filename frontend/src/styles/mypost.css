@@ -1,0 +1,26 @@
+.edit-btn {
+  background-color: blue;
+  border: none;
+  padding: 8px 12px;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.edit-btn:hover {
+  background: black;
+  color: white;
+}
+.del-btn {
+  background-color: red;
+  border: none;
+  padding: 8px 12px;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.del-btn:hover {
+  background: black;
+  color: white;
+}
