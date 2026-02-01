@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import Post from "../models/Post";
 import { AuthRequest } from "../middleware/auth.middleware";
-import mongoose, { mongo, Types } from "mongoose";
+import mongoose from "mongoose";
 
 interface Params {
   id: string;
@@ -13,26 +13,30 @@ interface IPostUpdate {
   image: string;
 }
 
+// ================== CREATE POST ==================
 export const createPost = async (req: AuthRequest, res: Response) => {
   try {
     const { title, description, image } = req.body;
 
     if (!title || !description) {
       return res
-        .status(401)
-        .json({ success: false, message: "title and descripton is required" });
+        .status(400)
+        .json({
+          success: false,
+          message: "Title and description are required",
+        });
     }
 
     const newPost = await Post.create({
       title,
       description,
       image,
-      author: req?.user?.userId,
+      author: req.user?.userId,
     });
 
     res.status(201).json({
       success: true,
-      message: "post successfully created",
+      message: "Post successfully created",
       data: newPost,
     });
   } catch (error: any) {
@@ -44,32 +48,34 @@ export const createPost = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// ================== GET MY POSTS ==================
 export const getMyPosts = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.userId.toString();
-
+    const userId = req.user?.userId;
     if (!userId) {
       return res
         .status(403)
-        .json({ success: false, message: "user not found" });
+        .json({ success: false, message: "User not found" });
     }
+
     const posts = await Post.find({ author: userId }).populate(
       "author",
       "email name"
     );
+
     res.status(200).json({ success: true, count: posts.length, data: posts });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || "internal server error from my posts",
+      message: error.message || "Internal server error from my posts",
     });
   }
 };
 
+// ================== GET ALL POSTS ==================
 export const getPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.find({}).populate("author", "email name");
-
     res.status(200).json({ success: true, count: posts.length, data: posts });
   } catch (error: any) {
     res.status(500).json({
@@ -79,6 +85,7 @@ export const getPosts = async (req: Request, res: Response) => {
   }
 };
 
+// ================== GET SINGLE POST ==================
 export const getSinglePost = async (req: Request<Params>, res: Response) => {
   try {
     const { id } = req.params;
@@ -94,73 +101,26 @@ export const getSinglePost = async (req: Request<Params>, res: Response) => {
         .status(404)
         .json({ success: false, message: "Post not found" });
     }
+
     res.status(200).json({ success: true, data: post });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || "internal server error single post",
+      message: error.message || "Internal server error single post",
     });
   }
 };
 
+// ================== UPDATE POST ==================
 export const updatePost = async (req: AuthRequest, res: Response) => {
-  const updatePost: Partial<IPostUpdate> = {};
-
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const { title, description, image } = req.body;
 
-    if (title) updatePost.title = title;
-    if (description) updatePost.description = description;
-    if (image) updatePost.image = image;
-
-    const objectId = new mongoose.Types.ObjectId(id);
-
-    if (!objectId) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid post ID" });
-    }
-
-    const post = await Post.findById(id);
-
-    if (!post) {
-      res.status(404).json({ success: false, message: "post not found" });
-    }
-    const postAuthor = post?.author.toString();
-    const userId = req.user?.userId;
-
-    if (postAuthor !== userId) {
-      return res
-        .status(403)
-        .json({ success: false, message: "you are not post author" });
-    }
-
-    const update = await Post.findByIdAndUpdate(id, updatePost, {
-      new: true,
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "post updated successfully",
-      data: update,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "internal server error single post",
-    });
-  }
-};
-
-export const deletePost = async (req: AuthRequest, res: Response) => {
-  try {
-    const id = req.query.id as string;
-    const objectId = new mongoose.Types.ObjectId(id);
-    if (!objectId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid Post ID" });
     }
 
     const post = await Post.findById(id);
@@ -169,37 +129,78 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
         .status(404)
         .json({ success: false, message: "Post not found" });
     }
-    const postAuthorId = post.author.toString();
+
     const userId = req.user?.userId;
-
-    if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
-
-    if (postAuthorId !== userId) {
+    if (post.author.toString() !== userId) {
       return res
         .status(403)
-        .json({ success: false, message: "you are not post author" });
+        .json({ success: false, message: "You are not post author" });
     }
 
-    await post.deleteOne();
-    return res
-      .status(200)
-      .json({ success: true, message: "Post Deleted successfully" });
+    const updateData: Partial<IPostUpdate> = {};
+    if (title) updateData.title = title;
+    if (description) updateData.description = description;
+    if (image) updateData.image = image;
+
+    const updatedPost = await Post.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Post updated successfully",
+      data: updatedPost,
+    });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || "internal server error from delete post",
+      message: error.message || "Internal server error update post",
     });
   }
 };
 
-export const likePost = async (req: AuthRequest, res: Response) => {
+// ================== DELETE POST ==================
+export const deletePost = async (req: AuthRequest, res: Response) => {
   try {
-    // დარწმუნება, რომ postId არის string
-    const postId = req.params.postId as string;
+    const id = req.query.id as string;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid post ID" });
+    }
+
+    const post = await Post.findById(id);
+    if (!post) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Post not found" });
+    }
 
     const userId = req.user?.userId;
+    if (post.author.toString() !== userId) {
+      return res
+        .status(403)
+        .json({ success: false, message: "You are not post author" });
+    }
+
+    await post.deleteOne();
+    res
+      .status(200)
+      .json({ success: true, message: "Post deleted successfully" });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error delete post",
+    });
+  }
+};
+
+// ================== LIKE / UNLIKE POST ==================
+export const likePost = async (req: AuthRequest, res: Response) => {
+  try {
+    const postId = req.params.postId as string;
+    const userId = req.user?.userId;
+
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
@@ -211,10 +212,8 @@ export const likePost = async (req: AuthRequest, res: Response) => {
         .json({ success: false, message: "Post not found" });
     }
 
-    // ObjectId შექმნა TS-სთვის
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    // Likes array-ში არსებობის შემოწმება
     const isLiked = post.likes.some((id) => id.equals(userObjectId));
 
     if (!isLiked) {
@@ -228,13 +227,13 @@ export const likePost = async (req: AuthRequest, res: Response) => {
     res.status(200).json({
       success: true,
       isLiked,
-      message: isLiked ? "Post Unliked" : "Post Liked",
+      message: isLiked ? "Post unliked" : "Post liked",
     });
   } catch (error: any) {
     console.log(error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: error.message || "Internal server error from likes",
+      message: error.message || "Internal server error like post",
     });
   }
 };
