@@ -5,7 +5,8 @@ import Comment from "../models/Comment";
 
 export const addComment = async (req: AuthRequest, res: Response) => {
   try {
-    const { postId, content } = req.body;
+    const postId = req.body.postId as string;
+    const content = req.body.content as string;
 
     if (!mongoose.Types.ObjectId.isValid(postId)) {
       return res
@@ -52,7 +53,13 @@ export const addComment = async (req: AuthRequest, res: Response) => {
 
 export const getComment = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid Post Id" });
+    }
     const comment = await Comment.find({ post: id });
     return res.status(200).json({
       success: true,
@@ -69,7 +76,7 @@ export const getComment = async (req: Request, res: Response) => {
 
 export const deleteComment = async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res
         .status(401)
