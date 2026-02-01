@@ -114,7 +114,9 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
     if (description) updatePost.description = description;
     if (image) updatePost.image = image;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    const objectId = new mongoose.Types.ObjectId(id);
+
+    if (!objectId) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid post ID" });
@@ -153,7 +155,7 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
 
 export const deletePost = async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.query.id as string;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res
