@@ -196,22 +196,25 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
 
 export const likePost = async (req: AuthRequest, res: Response) => {
   try {
-    const { postId } = req.params;
-    const userId = req.user?.userId;
+    // დარწმუნება, რომ postId არის string
+    const postId = req.params.postId as string;
 
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
     const post = await Post.findById(postId);
-
     if (!post) {
       return res
         .status(404)
         .json({ success: false, message: "Post not found" });
     }
+
+    // ObjectId შექმნა TS-სთვის
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
+    // Likes array-ში არსებობის შემოწმება
     const isLiked = post.likes.some((id) => id.equals(userObjectId));
 
     if (!isLiked) {
@@ -220,7 +223,7 @@ export const likePost = async (req: AuthRequest, res: Response) => {
       post.likes = post.likes.filter((id) => !id.equals(userObjectId));
     }
 
-    post.save();
+    await post.save();
 
     res.status(200).json({
       success: true,
