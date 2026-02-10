@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import "../styles/blog.css";
 import PostCard, { type PostType } from "../components/PostCard";
+import LeftNavbar from "../components/LeftNavbar";
 
 const Blog = () => {
   const [isError, setIsError] = useState<string>("");

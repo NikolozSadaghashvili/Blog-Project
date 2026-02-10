@@ -27,11 +27,18 @@ const Register = () => {
         "https://blog-project-2nvf.onrender.com/api/auth/register",
         { name: name.trim(), email: email.trim(), password: password.trim() },
       );
-      console.log(response);
+
       if (response.data.success) {
-        const { name, email, token, id } = response.data.data;
-        console.log(response.data);
-        setUser({ id, name, email, token });
+        const data = response.data.data;
+        const isAdmin = response.data.data.role === "admin";
+
+        setUser({
+          id: data._id,
+          name: data.name,
+          email: data.email,
+          token: response.data.token,
+          admin: isAdmin,
+        });
         navigate("/");
         return;
       }

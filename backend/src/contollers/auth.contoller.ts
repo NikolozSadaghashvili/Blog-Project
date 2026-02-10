@@ -3,6 +3,15 @@ import User, { IUser } from "../models/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find({});
+    res.status(200).json({ success: true, data: users });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: "internal server error" });
+  }
+};
+
 export const createAccout = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
@@ -48,7 +57,7 @@ export const createAccout = async (req: Request, res: Response) => {
         email: createdUser.email,
       },
       process.env.JWT_SECRET || "",
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     res.status(201).json({
@@ -58,7 +67,7 @@ export const createAccout = async (req: Request, res: Response) => {
         id: createdUser._id,
         name: name.toLowerCase(),
         email: email,
-        token,
+        role: token,
       },
     });
   } catch (error: any) {
@@ -72,54 +81,89 @@ export const createAccout = async (req: Request, res: Response) => {
 
 export const loginAccount = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body as { email: string; password: string };
 
+    // Validate inputs
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "email and password are required",
+        message: "Email and password are required",
       });
     }
+
     const lowerCaseEmail = email.toLowerCase();
+
+    // Find user by email
     const user = await User.findOne({ email: lowerCaseEmail });
 
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "email not found" });
+        .json({ success: false, message: "Email not found" });
     }
 
-    const findPassword = await bcrypt.compare(password, user.password);
-
-    if (!findPassword) {
+    // Compare password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return res
         .status(401)
-        .json({ success: false, message: "password not correct" });
+        .json({ success: false, message: "Password is incorrect" });
     }
 
+    // Check JWT_SECRET
+    if (!process.env.JWT_SECRET) {
+      return res
+        .status(500)
+        .json({ success: false, message: "JWT_SECRET not configured" });
+    }
+
+    // Generate token
     const token = jwt.sign(
       {
         userId: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
       },
-      process.env.JWT_SECRET || "",
-      {
-        expiresIn: "7d",
-      }
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" },
     );
 
-    const findUser = await User.findById(user._id).select("-password");
+    // Return user without password
+    const safeUser = await User.findById(user._id).select("-password");
+
     res.status(200).json({
       success: true,
-      message: "login is successfully",
-      data: findUser,
+      message: "Login successful",
+      data: safeUser,
       token,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    res
-      .status(500)
-      .json({ success: false, message: "internal server error from login " });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error from login",
+    });
+  }
+};
+
+export const deleteAccount = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const findUser = await User.findById(id);
+    if (!findUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "user not found" });
+    }
+    await User.findByIdAndDelete(id);
+
+    res.status(200).json({ success: true, message: "user deleted" });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: "Internal serrver error from delete account",
+    });
   }
 };

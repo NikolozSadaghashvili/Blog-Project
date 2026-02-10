@@ -19,12 +19,10 @@ export const createPost = async (req: AuthRequest, res: Response) => {
     const { title, description, image } = req.body;
 
     if (!title || !description) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Title and description are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Title and description are required",
+      });
     }
 
     const newPost = await Post.create({
@@ -60,7 +58,7 @@ export const getMyPosts = async (req: AuthRequest, res: Response) => {
 
     const posts = await Post.find({ author: userId }).populate(
       "author",
-      "email name"
+      "email name",
     );
 
     res.status(200).json({ success: true, count: posts.length, data: posts });
@@ -160,9 +158,12 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
 };
 
 // ================== DELETE POST ==================
+
 export const deletePost = async (req: AuthRequest, res: Response) => {
   try {
-    const id = req.query.id as string;
+    const id = req.params.id as string;
+
+    // Check valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res
         .status(400)
@@ -177,20 +178,26 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
     }
 
     const userId = req.user?.userId;
-    if (post.author.toString() !== userId) {
-      return res
-        .status(403)
-        .json({ success: false, message: "You are not post author" });
+    const userRole = req.user?.role;
+
+    // Author or Admin permission
+    if (post.author.toString() !== userId && userRole !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "You are not allowed to delete this post",
+      });
     }
 
     await post.deleteOne();
-    res
-      .status(200)
-      .json({ success: true, message: "Post deleted successfully" });
+
+    res.status(200).json({
+      success: true,
+      message: "Post deleted successfully",
+    });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || "Internal server error delete post",
+      message: error.message || "Internal server error",
     });
   }
 };

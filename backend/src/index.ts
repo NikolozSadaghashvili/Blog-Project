@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import authRouter from "./routes/auth.router";
 import postRouter from "./routes/post.router";
 import commentRouter from "./routes/comment.router";
+import adminRouter from "./routes/adminRouter";
 import cors from "cors";
 
 dotenv.config();
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/auth", authRouter);
+app.use("/api/admin", adminRouter);
 app.use("/api/post", postRouter);
 app.use("/api/comment", commentRouter);
 

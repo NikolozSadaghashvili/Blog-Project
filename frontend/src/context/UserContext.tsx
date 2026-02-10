@@ -11,6 +11,7 @@ interface IUser {
   name: string;
   email: string;
   token: string;
+  admin: boolean;
 }
 
 interface IUserContext {

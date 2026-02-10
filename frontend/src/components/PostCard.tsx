@@ -27,7 +27,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
   const navigate = useNavigate();
   const { user } = useUser();
-  const [isLike, setIsLike] = useState<boolean>(false);
+  const userId = user?.id;
+  const likeIncludes = userId ? likes.includes(userId) : false;
+  console.log(likeIncludes);
+
+  const [isLike, setIsLike] = useState<boolean>(likeIncludes);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -43,7 +47,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       );
       if (response.data.success) {
         toast.success(response.data.message);
-        setIsLike(isLike);
+        setIsLike(!isLike);
         return;
       }
     } catch (error: any) {
@@ -72,6 +76,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         <div className="post-meta">
           <span className="post-author">Author: {author.email}</span>
           <span className="post-date">Created: {createdAt.split("T")[0]}</span>
+          <span className="post-date">Like: {likes.length}</span>
         </div>
       </div>
 
@@ -80,9 +85,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         <button className="more-btn" onClick={() => navigate(`/post/${_id}`)}>
           More...
         </button>
-        <button onClick={() => likePost(_id)}>
-          {isLike ? "Unlike" : "Like"}
-        </button>
+        {user && (
+          <button onClick={() => likePost(_id)}>
+            {isLike ? "Unlike" : "Like"}
+          </button>
+        )}
       </div>
     </div>
   );

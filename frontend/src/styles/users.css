@@ -1,0 +1,48 @@
+.usersContainer {
+  padding: 30px;
+  color: white;
+  background: #0f172a;
+  min-height: 100vh;
+  font-family: sans-serif;
+}
+
+.usersContainer h2 {
+  margin-bottom: 20px;
+}
+
+.usersTable {
+  background: #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tableHeader,
+.tableRow {
+  display: grid;
+  grid-template-columns: 1fr 2fr 120px;
+  padding: 15px;
+  align-items: center;
+}
+
+.tableHeader {
+  background: #334155;
+  font-weight: bold;
+}
+
+.tableRow {
+  border-top: 1px solid #334155;
+}
+
+.tableRow button {
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tableRow button:hover {
+  background: #dc2626;
+}

@@ -3,6 +3,7 @@ import "../styles/home.css";
 import type { PostType } from "../components/PostCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import LeftNavbar from "../components/LeftNavbar";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -30,15 +31,7 @@ const Home = () => {
   const others = posts.slice(1, 5);
   return (
     <div className="magazine-root">
-      <aside className="magazine-sidebar">
-        <div className="sidebar-inner">
-          <nav className="sidebar-nav">
-            <Link to="/">Home</Link>
-            <Link to="/post">All Posts</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </div>
-      </aside>
+      <LeftNavbar />
 
       <main className="magazine-main">
         <section className="featured">
@@ -47,7 +40,8 @@ const Home = () => {
           </div>
           <div className="featured-content">
             <div className="meta">
-              By {featured.author.name} • {featured.createdAt.split("T")[0]}
+              By {featured.author.name || ""} •{" "}
+              {featured.createdAt.split("T")[0]}
             </div>
             <h1 className="featured-title">{featured.title}</h1>
             <p className="featured-desc">{featured.description}</p>
@@ -74,7 +68,7 @@ const Home = () => {
                 <h4 className="card-title">{p.title.substring(0, 35)}...</h4>
                 <p className="card-desc">{p.description.substring(0, 55)}...</p>
                 <div className="card-meta">
-                  <span>{p.author.name}</span>
+                  <span>{p.author.name || ""}</span>
                   <span>{p.createdAt.split("T")[0]}</span>
                 </div>
               </div>

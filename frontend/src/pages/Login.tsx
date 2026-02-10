@@ -29,16 +29,20 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "https://blog-project-2nvf.onrender.com/api/auth/login",
+        "http://localhost:5000/api/auth/login",
         { email, password },
       );
+      const data = response.data.data;
+      const isAdmin = response.data.data.role === "admin";
 
       setUser({
-        id: response.data.id,
-        name: response.data.data.name,
-        email: response.data.data.email,
+        id: data._id,
+        name: data.name,
+        email: data.email,
         token: response.data.token,
+        admin: isAdmin,
       });
+
       navigate("/");
     } catch (error: any) {
       setError(error.response?.data?.message || "Something went wrong");
