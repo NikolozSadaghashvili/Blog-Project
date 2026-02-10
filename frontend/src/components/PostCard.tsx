@@ -37,9 +37,9 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const likePost = async (postId: string) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/post/like/${postId}`,
+        `https://blog-project-2nvf.onrender.com/api/post/like/${postId}`,
         {},
-        { headers: { Authorization: `Bearer ${user?.token}` } }
+        { headers: { Authorization: `Bearer ${user?.token}` } },
       );
       if (response.data.success) {
         toast.success(response.data.message);
@@ -48,7 +48,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       }
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || error.message || "Unknown error"
+        error?.response?.data?.message || error.message || "Unknown error",
       );
     }
   };

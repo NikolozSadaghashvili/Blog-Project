@@ -13,7 +13,7 @@ const CreatePost = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState<string>(editingPost?.title || "");
   const [description, setDescription] = useState<string>(
-    editingPost?.description || ""
+    editingPost?.description || "",
   );
   const [image, setImage] = useState<string>(editingPost?.image || "");
 
@@ -30,9 +30,9 @@ const CreatePost = () => {
     try {
       if (editingPost) {
         const response = await axios.put(
-          `http://localhost:5000/api/post/${editingPost._id}`,
+          `https://blog-project-2nvf.onrender.com/api/post/${editingPost._id}`,
           { title, description, image },
-          { headers: { Authorization: `Bearer ${user?.token}` } }
+          { headers: { Authorization: `Bearer ${user?.token}` } },
         );
         if (response.data.success) {
           setImage("");
@@ -43,13 +43,13 @@ const CreatePost = () => {
         }
       } else {
         const response = await axios.post(
-          "http://localhost:5000/api/post",
+          "https://blog-project-2nvf.onrender.com/api/post",
           {
             title,
             description,
             image,
           },
-          { headers: { Authorization: `Bearer ${user?.token}` } }
+          { headers: { Authorization: `Bearer ${user?.token}` } },
         );
         if (response.data.success) {
           setImage("");
@@ -61,7 +61,9 @@ const CreatePost = () => {
       }
     } catch (error: any) {
       setIsError(
-        error.response?.data?.message || error.message || "Something went wrong"
+        error.response?.data?.message ||
+          error.message ||
+          "Something went wrong",
       );
     }
   };

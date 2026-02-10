@@ -10,7 +10,9 @@ const Blog = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/post");
+      const response = await axios.get(
+        "https://blog-project-2nvf.onrender.com/api/post",
+      );
       if (!response.data.success) {
         setIsError(response.data.message);
         setIsLoading(false);

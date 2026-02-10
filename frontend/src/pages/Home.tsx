@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/home.css";
-import type { PostType } from "./Blog";
+import type { PostType } from "../components/PostCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -8,12 +8,12 @@ const Home = () => {
   const navigate = useNavigate();
   const [posts, setPost] = useState<PostType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const featured = posts[0];
-  const others = posts.slice(1, 5);
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/post");
+      const response = await axios.get(
+        "https://blog-project-2nvf.onrender.com/api/post",
+      );
       setPost(response.data.data);
     } catch (error: any) {
       console.log(error);
@@ -24,7 +24,10 @@ const Home = () => {
   useEffect(() => {
     fetchData();
   }, []);
-  if (isLoading) return <h2>Loading....</h2>;
+  if (isLoading || posts.length === 0) return <h2>Loading....</h2>;
+
+  const featured = posts[0];
+  const others = posts.slice(1, 5);
   return (
     <div className="magazine-root">
       <aside className="magazine-sidebar">

@@ -27,7 +27,7 @@ const Comments = () => {
   const fetchComment = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/comment/${id}`
+        `https://blog-project-2nvf.onrender.com/api/comment/${id}`,
       );
       if (response.data.success) {
         setComments(response.data.comments.reverse());
@@ -35,7 +35,7 @@ const Comments = () => {
       }
     } catch (error: any) {
       setIsError(
-        error.response?.data?.message || error.message || "unknow error"
+        error.response?.data?.message || error.message || "unknow error",
       );
     }
   };
@@ -45,12 +45,12 @@ const Comments = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "http://localhost:5000/api/comment",
+        "https://blog-project-2nvf.onrender.com/api/comment",
         {
           postId: id,
           content: content,
         },
-        { headers: { Authorization: `Bearer ${user?.token}` } }
+        { headers: { Authorization: `Bearer ${user?.token}` } },
       );
       if (response.data.success) {
         setContent("");
@@ -61,10 +61,10 @@ const Comments = () => {
     } catch (error: any) {
       setIsLoading(false);
       toast.error(
-        error.response?.data?.message || error.message || "unknow error"
+        error.response?.data?.message || error.message || "unknow error",
       );
       setIsError(
-        error.response?.data?.message || error.message || "unknow error"
+        error.response?.data?.message || error.message || "unknow error",
       );
     }
   };
@@ -79,8 +79,8 @@ const Comments = () => {
   const deleteComment = async (commentId: string) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/comment/${commentId}`,
-        { headers: { Authorization: `Bearer ${user?.token}` } }
+        `https://blog-project-2nvf.onrender.com/api/comment/${commentId}`,
+        { headers: { Authorization: `Bearer ${user?.token}` } },
       );
       if (response.data.success) {
         toast.success(response.data.message || "Delete success");
@@ -88,7 +88,7 @@ const Comments = () => {
       }
     } catch (error: any) {
       setIsError(
-        error.response?.data?.message || error.message || "unknow error"
+        error.response?.data?.message || error.message || "unknow error",
       );
     }
   };

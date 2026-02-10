@@ -24,9 +24,10 @@ const Register = () => {
     setError("");
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        { name: name.trim(), email: email.trim(), password: password.trim() }
+        "https://blog-project-2nvf.onrender.com/api/auth/register",
+        { name: name.trim(), email: email.trim(), password: password.trim() },
       );
+      console.log(response);
       if (response.data.success) {
         const { name, email, token, id } = response.data.data;
         console.log(response.data);
@@ -37,7 +38,9 @@ const Register = () => {
       setError("Unexpected server response");
     } catch (error: any) {
       setError(
-        error.response?.data?.message || error.message || "Something went wrong"
+        error.response?.data?.message ||
+          error.message ||
+          "Something went wrong",
       );
     }
   };

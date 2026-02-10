@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { useEffect, useState } from "react";
-import type { PostType } from "./Blog";
+import type { PostType } from "../components/PostCard";
 import axios from "axios";
 import "../styles/mypost.css";
 import toast from "react-hot-toast";
@@ -15,9 +15,12 @@ const MyPost = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/post/my", {
-        headers: { Authorization: `Bearer ${user?.token}` },
-      });
+      const response = await axios.get(
+        "https://blog-project-2nvf.onrender.com/api/post/my",
+        {
+          headers: { Authorization: `Bearer ${user?.token}` },
+        },
+      );
 
       if (response.data.success) {
         setPost(response.data.data.reverse());
@@ -26,7 +29,9 @@ const MyPost = () => {
       }
     } catch (error: any) {
       setError(
-        error.response?.data?.message || error.message || "Something went wrong"
+        error.response?.data?.message ||
+          error.message ||
+          "Something went wrong",
       );
     }
   };
@@ -39,8 +44,8 @@ const MyPost = () => {
     try {
       setIsLoading(true);
       const response = await axios.delete(
-        `http://localhost:5000/api/post/${id}`,
-        { headers: { Authorization: `Bearer ${user?.token}` } }
+        `https://blog-project-2nvf.onrender.com/api/post/${id}`,
+        { headers: { Authorization: `Bearer ${user?.token}` } },
       );
       if (response.data.success) {
         toast.success(response.data.message);
@@ -48,7 +53,9 @@ const MyPost = () => {
       fetchData();
     } catch (error: any) {
       setError(
-        error.response?.data?.message || error.message || "Something went wrong"
+        error.response?.data?.message ||
+          error.message ||
+          "Something went wrong",
       );
     } finally {
       setIsLoading(false);

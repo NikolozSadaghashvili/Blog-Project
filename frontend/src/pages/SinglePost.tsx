@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import type { PostType } from "./Blog";
+import type { PostType } from "../components/PostCard";
 import axios from "axios";
 import "../styles/singlepost.css";
 import Comments from "../components/Comments";
@@ -13,13 +13,15 @@ const SinglePost = () => {
 
   const fetchPost = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/post/${id}`);
+      const response = await axios.get(
+        `https://blog-project-2nvf.onrender.com/api/post/${id}`,
+      );
       if (response.data.success) {
         setPost(response.data.data);
       }
     } catch (error: any) {
       setIsError(
-        error.response?.data?.message || error.message || "post fach error"
+        error.response?.data?.message || error.message || "post fach error",
       );
     } finally {
       setIsLoading(false);
