@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
 import "../styles/users.css";
 
