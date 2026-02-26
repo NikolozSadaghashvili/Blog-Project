@@ -17,6 +17,9 @@ app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/post", postRouter);
 app.use("/api/comment", commentRouter);
+app.get("/", (req, res) => {
+  res.send("Hello from Blog Project");
+});
 
 const PORT = process.env.PORT || 5000;
 
